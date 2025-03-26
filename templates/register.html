@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Marineford Recruitment</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Pirata One', cursive;
+      background: url('/static/reg.webp') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .form-container {
+      background-color: rgba(0, 0, 50, 0.85);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 0 20px #00f7ff;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    input, select, button {
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 0.6rem;
+      border: none;
+      border-radius: 10px;
+    }
+    button {
+      background-color: #00bfff;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #result {
+      background: #111;
+      color: #0ff;
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h1>Marineford Recruitment Form</h1>
+    <form id="register-form">
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="text" name="missionReason" placeholder="Mission Reason" required />
+      <select name="rank">
+        {% for rank in ranks %}
+        <option value="{{ rank }}">{{ rank }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit">Register</button>
+    </form>
+    <div id="result"></div>
+  </div>
+  <script>
+    document.getElementById('register-form').onsubmit = async (e) => {
+      e.preventDefault();
+      const email = e.target.email.value;
+      const missionReason = e.target.missionReason.value;
+      const rank = e.target.rank.value;
+
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          attributes: {
+            email: email,
+            missionReason: missionReason
+          },
+          relationships: {
+            ranks: {
+              data: [{ type: "rank", id: rank }]
+            }
+          }
+        })
+      });
+
+      const data = await response.json();
+      let msg = `
+        🌀 Your registration has been received.<br>
+        Status: <strong>${data.status}</strong><br>
+        Marine ID: <code>${data.user_id.slice(0, 8)}...</code><br><br>
+        <em>If you're not satisfied with your fate... perhaps the sea holds other answers.</em>
+      `;
+
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = msg;
+      resultDiv.style.display = 'block';
+    };
+  </script>
+</body>
+</html>
