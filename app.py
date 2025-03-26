@@ -66,7 +66,7 @@ def dashboard():
     user = users_db[email]
     if user['rank'] != admin_role:
         return "⚠️ Access Denied. Only the Fleet Admiral can enter here.", 403
-    return render_template('admin.html', flag="CTF{straw_hat_admin_bypass}")
+    return render_template('admin.html', flag="HICA{straw_hat_admin_bypass}")
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
